@@ -57,7 +57,7 @@
 		
 	mysqli_query($conn, "INSERT INTO databasecheck (`dbfull`) VALUES(1)") or die(mysqli_error($conn));
 
-	header("Location: http://localhost/30hills/home.php");
+	header("Location: http://localhost/30hills/backend/home.php");
 	exit();
 
 	// $stmt->close();
