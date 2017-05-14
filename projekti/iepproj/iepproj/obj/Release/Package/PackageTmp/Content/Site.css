@@ -1,0 +1,140 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+.searchbox{
+    margin:auto;
+    display:block;
+}
+.aukcije{
+    list-style:none;
+}
+.aukcija {
+    text-decoration: none;
+    list-style: none;
+    border: solid 1px #dddddd;
+    padding: 5px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 5px;
+    height:460px;
+}
+.aukcija img{
+    max-width:100%;
+max-height:100%;
+width:100%;
+}
+.Slika{
+    overflow:hidden;
+    height:200px;
+}
+.navbar-inverse{
+    background-color:#14d16f;
+    border-color:white;
+    color:white;
+}
+.navbar-inverse .navbar-brand{
+    color:white;
+}
+.navbar-inverse .navbar-nav > li >a{
+    color:white;
+}
+.navbar-inverse .navbar-toggle:hover, .navbar-inverse .navbar-toggle:focus{
+    background-color:#1fc66f;
+}
+.navbar-inverse .navbar-toggle:hover, .navbar-inverse .navbar-toggle:focus{
+    border-color:white;
+}
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form{
+    border-color:rgb(75, 231, 150);
+}
+input, select, textarea {
+    background-color: #f7f7f7;
+    border: solid 3px #e1e1e1;
+    border-radius: 6px;
+}
+.param input {
+    max-width: 100px;
+    font-size: 12px;
+}
+.param{
+    display:none;
+}
+.detaljno{
+    font-size:11px;
+}
+.cena{
+    font-size: 30px;
+    border: 1px solid #dddddd;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    margin: 0 25px;
+}
+.bid{
+    margin-top: 10px;
+}
+.navbar-inverse .navbar-toggle {
+    border-color: #fff;
+}
+.Slikafull{
+    overflow:hidden;
+    height:500px;
+}
+.Slikafull img{
+    max-width:100%;
+max-height:100%;
+width:100%;
+}
+.aukcijafull {
+    text-decoration: none;
+    list-style: none;
+    border: solid 1px #dddddd;
+    padding: 5px;
+    text-align: center;
+    border-radius: 5px;
+    height:250px;
+}
+.posl{
+    text-align:center;
+}
+.posl p{
+        border: solid 1px #dddddd;
+    border-left-width: 0px;
+    border-right-width: 0px;
+}
+.bidovi{
+    display:inline-block;
+}
+#loading {
+    display:    block;
+    position:   fixed;
+    z-index:    2000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: white 
+                url('http://i.imgur.com/JpdhLJz.gif') 
+                50% 50% 
+                no-repeat;
+}

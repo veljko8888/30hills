@@ -1,0 +1,234 @@
+﻿@model PagedList.IPagedList<iepproj.Models.Aukcija>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Home Page";
+}
+@functions{
+    public static int GetEpochSeconds(DateTime? date)
+    {
+        TimeSpan? t = date - new DateTime(1970, 1, 1);
+        if (t.HasValue)
+        {
+            TimeSpan x = t.Value;
+            return (int)x.TotalSeconds;
+        }
+        return 0;
+    }
+}
+
+<div class="jumbotron" id="searchbox">
+    <div class="row">
+        
+        @using (Html.BeginForm())
+        {
+            <div class="col-md-offset-3 col-md-6 " style="text-align:center">
+                @if (HttpContext.Current.Session["ID"] != null && HttpContext.Current.Session["Admin"]==null)
+                {
+                    <h6>Broj Tokena:</h6>
+                    <h3 id="@ViewBag.idk" class="tokeni">@Html.ViewBag.brtokena</h3>
+                }
+                <div class="pretraga">
+                    Pretrazi aukcije:
+                    <br />@Html.TextBox("SearchString")
+                    <br/>
+                    <div class="detaljno btn btn-default">Detaljno</div>
+                </div>
+                <div class="param">
+                    Min cena:<br />
+                    @Html.TextBox("Min")<br />
+                    Max cena:<br />
+                    @Html.TextBox("Max")<br />
+                    Status:<br />
+                    <select id="Status" name="Status">
+                        <option selected="selected" value=""></option>
+                        <option value="READY">READY</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="SOLD">SOLD</option>
+                        <option value="EXPIRED">EXPIRED</option>
+                    </select>
+                </div>
+                <input type="hidden" name="moje" value="0" />
+                <input type="submit" class="btn btn-default" value="Search" />
+                @if (HttpContext.Current.Session["ID"] != null && HttpContext.Current.Session["Admin"]==null) { 
+                    <br /><a href="/?moje=1">Prikazi dobijene aukcije</a>
+                }
+            </div>
+            <div class="col-md-offset-3"></div>
+        }
+    </div>
+</div>
+
+<div class="row aukcije">
+    @foreach (var item in Model)
+    {
+                                                <!-- start single product item -->
+    <li class="col-md-3 col-sm-6">
+        <div class="aukcija">
+            @if (HttpContext.Current.Session["Admin"] != null && item.Status == "READY")
+            {
+                @Ajax.ActionLink("Izmeni", "IzmeniAukciju","Aukcija", new { id = item.AukcijaID }, new AjaxOptions { HttpMethod = "POST" })<br/>
+                @Ajax.ActionLink("Obrisi", "ObrisiAukciju", "Aukcija", new { id = item.AukcijaID }, new AjaxOptions { HttpMethod = "POST" })
+
+            }
+            
+            <h4 class="aa-product-title"><a href="@Url.Action("AukcijaFull", "Aukcija", new { id = item.AukcijaID })">@Html.DisplayFor(modelItem => item.Proizvod)</a></h4>
+            <div class="Slika">
+            <a class="aa-product-img" href="@Url.Action("AukcijaFull", "Aukcija", new { id = item.AukcijaID })">
+                @{
+        string imageSrc = "/Content/img/view-slider/large/polo-shirt-1.png";
+        if (item.Slika != null)
+        {
+            string imageBase64 = Convert.ToBase64String(item.Slika);
+            imageSrc = string.Format("data:image/gif;base64,{0}", imageBase64);
+        }
+                }
+                <img src="@imageSrc" alt="slika_proizvoda" class="product-image" /><br />
+            </a>
+            </div>
+            <p id="@Html.DisplayFor(modelItem => item.AukcijaID)" class="cena">@Html.DisplayFor(modelItem => item.TrenutnaCena)$</p><br />
+            <span id="@Html.DisplayFor(modelItem => item.AukcijaID)" class="time"> @ViewBag.vreme[item.AukcijaID]</span><br/>
+            <p id="@Html.DisplayFor(modelItem => item.AukcijaID)" class="ime">@ViewBag.bid[item.AukcijaID]</p>
+            <a href="#" data-toggle="tooltip" data-placement="top" title="Početna cena">@Html.DisplayFor(modelItem => item.PocetnaCena)$</a><br />
+            <span id="@Html.DisplayFor(modelItem => item.AukcijaID)" class="status" href="#">@Html.DisplayFor(modelItem => item.Status)</span><br />
+                        @if (item.Status == "OPEN" && HttpContext.Current.Session["ID"] != null && HttpContext.Current.Session["Admin"]==null)
+                        {
+                            <a id="@Html.DisplayFor(modelItem => item.AukcijaID)" class="bid btn btn-default" >
+                                <span class="fa fa-shopping-cart"></span>Bid</a><br />
+                        }
+            <input type="hidden" name="idp" class="idp" value="@HttpContext.Current.Session["ID"]" />
+</div>
+        <!-- product badge -->
+        
+    </li>
+    }
+</div>
+<div class="page-numbering">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.CurrentFilter,Min=ViewBag.Min,Max=ViewBag.Max,Status=ViewBag.Status, sortOrder = ViewBag.CurrentSort }))
+</div>
+@section scripts
+    {
+        <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+        <script src="~/signalr/hubs"></script>
+        <script>
+            $(function () {
+                var now = new Date().getTime();
+                var pt = (now - performance.timing.navigationStart)/1000;
+                var ponovo=new Array(10000);
+                var chat = $.connection.myHub1;
+                chat.client.licitirano = function (id, ime, Cena,s) {
+                        $("#"+id+".ime").text(ime);
+                        $("#"+id+".cena").text(Cena+"$");
+                        if(s=="DODAJ"){
+                            var hours= parseInt($("#"+id+".time").text().substring(0,2));
+                            var minutes = parseInt($("#"+id+".time").text().substring(3,5));
+                            var seconds = parseInt($("#"+id+".time").text().substring(6,8));
+                            var count= hours*60*60+minutes*60+seconds+10;
+                            seconds = Math.floor( (count%60));
+                            minutes = Math.floor( (count/60) % 60 );
+                            hours = Math.floor( (count/(60*60)) % 24 );
+                            seconds= ("0" + seconds).slice(-2);
+                            minutes= ("0" + minutes).slice(-2);
+                            hours= ("0" + hours).slice(-2);
+                            $("#"+id+".time").text(hours+":"+minutes+":"+seconds);
+                        }
+                        
+                }
+                chat.client.tokeni = function(idk){
+                    var x=$("#"+idk+".tokeni").text();
+                    var x=x-1;
+                    $("#"+idk+".tokeni").text(x);
+                }
+                chat.client.otkucalo = function (id, Status) {
+                    if(Status=="SOLD"||Status=="EXPIRED"){
+                        $("#"+id+".status").text(Status);
+                        $("#"+id+".bid").hide();
+                        //$("#"+idd+".time").hide();
+                        clearTimeout(ponovo[id]);
+                    }
+                }
+                chat.client.nemaTokena=function(){
+                    alert("Nemate dovoljno tokena");
+                }
+                $.connection.hub.start().done(function () {
+                    $('.bid').click(function () {
+                        @if(HttpContext.Current.Session["ID"]!=null){
+                            @:chat.server.licit($(this).attr('id'),@HttpContext.Current.Session["ID"]);
+                        }
+                    });
+                    
+                    function timer(idd){
+                        var hours= parseInt($("#"+idd+".time").text().substring(0,2));
+                        var minutes = parseInt($("#"+idd+".time").text().substring(3,5));
+                        var seconds = parseInt($("#"+idd+".time").text().substring(6,8));
+                        var count= hours*60*60+minutes*60+seconds-1;
+                        if(count>=0){
+                            seconds = Math.floor( (count%60));
+                            minutes = Math.floor( (count/60) % 60 );
+                            hours = Math.floor( (count/(60*60)) % 24 );
+                            seconds= ("0" + seconds).slice(-2);
+                            minutes= ("0" + minutes).slice(-2);
+                            hours= ("0" + hours).slice(-2);
+                            $("#"+idd+".time").text(hours+":"+minutes+":"+seconds);
+                    
+                            ponovo[idd]=setTimeout(function () {
+                                timer(idd);
+                            },1000);
+                            return;
+                        }else{
+                            chat.server.otkuc(idd);
+                            // $("#"+idd+".time").hide();
+                            $("#"+idd+".time").text("00:00:00");
+                            ponovo[idd]=setTimeout(function () {
+                                timer(idd);
+                            },1000);
+                        }
+
+                    };
+                    $(".time").each(function(){
+                        var idd=$(this).attr('id');
+                        /*var kraj=Math.floor($(this).text());
+                        var now= new Date().getTime()/1000;
+                        now=Math.floor(now);
+                        var res=kraj - now;*/
+                        
+                        var res=$(this).text()-pt;
+                        res=res;
+                        if(res>0){
+                            var seconds = Math.floor( (res%60));
+                            var minutes = Math.floor( (res/60) % 60 );
+                            var hours = Math.floor( (res/(60*60)) % 24 );
+                            seconds= ("0" + seconds).slice(-2);
+                            minutes= ("0" + minutes).slice(-2);
+                            hours= ("0" + hours).slice(-2);
+                            $(this).text(hours+":"+minutes+":"+seconds);
+                            count=res;
+                            timer(idd);
+                        }else{
+                            chat.server.otkuc(idd);
+                            // $("#"+idd+".time").hide();
+                            $(this).text("00:00:00");
+                        }
+                    });
+                });
+            });
+            function htmlEncode(value) {
+                var encodedValue = $('<div />').text(value).html();
+                return encodedValue;
+            }
+        </script>
+        <script>
+            $(".detaljno").click(function(){
+                $(".param").slideToggle();
+            });
+           
+            /*var ds=new Date(0);
+            ds.setUTCSeconds($("#15.time").text());
+            var d=new Date().getTime()/1000;
+            var date=new Date(0);
+            date.setUTCSeconds(d);
+            alert(date.toUTCString()+"<-lokal     zavrsava->"+ds.toUTCString());
+            */
+        </script>
+    }
+

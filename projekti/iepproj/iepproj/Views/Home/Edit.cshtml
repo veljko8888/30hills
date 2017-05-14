@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@model iepproj.Models.Korisnik
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Popunite sva polja</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Ime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Ime, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Ime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Prezime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Prezime, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Prezime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @type = "email" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="text-align:right" class="control-label col-md-2" for="Lozinka">Lozinka</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" type="password" name="Lozinka" value="" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="text-align:right" class="control-label col-md-2" for="NovaLozinka">Nova Lozinka</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" type="password" name="NovaLozinka" value="" />
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label style="text-align:right" class="control-label col-md-2" for="PotvrdaNove">Potvrdi novu lozinku</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" type="password" name="PotvrdaNove" value="" />
+            </div>
+        </div>
+        <label style="text-align:right" class="control-label col-md-2" for="">Broj Tokena</label>
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <h5 style="color:red">@ViewBag.Message</h5>
+                <input type="submit" value="Edit" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+
+

@@ -1,0 +1,56 @@
+﻿@model PagedList.IPagedList<iepproj.Models.Narudzbina>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "MojeNarudzbine";
+}
+
+<h2>MojeNarudzbine</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            ID Narudzbine
+        </th>
+        <th>
+            Cena paketa
+        </th>
+        <th>
+            Broj tokena
+        </th>
+        <th>
+            Status
+        </th>
+        <th>
+            Vreme
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {   
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.NarudzbinaID)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CenaPaketa)$
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BrojTokena)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DatumPravljenja)
+        </td>
+        <td>
+            @Html.ActionLink("Detalji", "Narudzbina", new { id = item.NarudzbinaID })
+        </td>
+    </tr>
+}
+
+</table>
+<div class="page-numbering">
+    @Html.PagedListPager(Model, page => Url.Action("MojeNarudzbine", new { page}))
+</div>
